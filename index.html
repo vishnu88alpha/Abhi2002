@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Split Screen Navigation with Hearts</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Heart animation styles */
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            transform: rotate(45deg);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Initial message styles */
+        .initial-message {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 24px;
+            color: black;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button styles */
+        .start-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .start-button:hover {
+            background-color: #0056b3;
+        }
+        
+        /* Page layout styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            perspective: 1500px;
+            overflow: hidden;
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            transition: transform 1s cubic-bezier(0.42, 0, 0.58, 1);
+            transform-style: preserve-3d;
+            transform-origin: right center;
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        .page.current {
+            z-index: 2;
+        }
+
+        .top-half, .bottom-half {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .top-half {
+            top: 0;
+            background-color: #f0f0f0;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .bottom-half {
+            bottom: 0;
+            background-color: #e0e0e0;
+            border-top: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <audio id="background-music" src="Inka Edo-SenSongsMp3.Co.mp3" loop></audio>
+    
+    <div class="container">
+        <div class="page" id="page1">
+            <div class="top-half" onclick="navigate('previous')">
+                <div class="hearts-container-top"></div>
+            </div>
+            <div class="bottom-half" onclick="navigate('next')">
+                <div class="hearts-container-bottom"></div>
+                <button class="start-button" onclick="startNavigation(1)">Press Start</button>
+            </div>
+        </div>
+        <div class="page" id="page2">
+            <div class="top-half" onclick="navigate('previous')">
+                <div id="message2" class="message">Hello My Love<br></div>
+                <div id="loveMessage2" class="love-message">&#9733; &#9734; &#9733;</div>
+                <div class="hearts-container-top"></div>
+            </div>
+            <div class="bottom-half" onclick="navigate('next')">
+                <div class="hearts-container-bottom"></div>
+                <button class="start-button" onclick="startNavigation(2)">Press Start</button>
+            </div>
+        </div>
+        <div class="page" id="page3">
+            <div class="top-half" onclick="navigate('previous')">
+                <div class="hearts-container-top"></div>
+            </div>
+            <div class="bottom-half" onclick="navigate('next')">
+                <div class="hearts-container-bottom"></div>
+                <button class="start-button" onclick="startNavigation(3)">Press Start</button>
+            </div>
+        </div>
+        <div class="page" id="page4">
+            <div class="top-half" onclick="navigate('previous')">
+                <div id="loveMessage4" class="love-message">
+                    <p>You are loved!</p>
+                    <p><br>Mah dear Ammu🖤🤍,<br>Never have I been so blessed as to fall in love with someone as wonderful as you...<br>I loveeee youuuuu:-)<br>@abhiiiiii</p> 
+                    &#9733; &#9734; &#9733;
+                </div>
+                <div class="hearts-container-top"></div>
+            </div>
+            <div class="bottom-half" onclick="navigate('next')">
+                <div class="hearts-container-bottom"></div>
+                <button class="start-button" onclick="startNavigation(4)">Press Start</button>
+            </div>
+        </div>
+        <div class="page" id="page5">
+            <div class="top-half" onclick="navigate('previous')">
+                <div id="message5" class="message">Hello My Love</div>
+                <div class="hearts-container-top"></div>
+            </div>
+            <div class="bottom-half" onclick="navigate('next')">
+                <div class="hearts-container-bottom"></div>
+                <button class="start-button" onclick="startNavigation(5)">Press Start</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize the audio element
+        const backgroundMusic = document.getElementById('background-music');
+        let musicStarted = false;
+
+        // Function to start playing music
+        function startBackgroundMusic() {
+            if (!musicStarted) {
+                backgroundMusic.play();
+                musicStarted = true;
+            }
+        }
+
+        // Add an event listener to start music on user interaction (click anywhere on the page)
+        document.addEventListener('click', function() {
+            startBackgroundMusic();
+        });
+
+        // Function to handle navigation between pages
+        function navigate(direction) {
+            const container = document.querySelector('.container');
+            const pages = container.querySelectorAll('.page');
+            const currentPage = container.querySelector('.current');
+            let currentIndex;
+
+            pages.forEach((page, index) => {
+                if (page === currentPage) {
+                    currentIndex = index;
+                }
+            });
+
+            let newIndex;
+            if (direction === 'previous') {
+                newIndex = currentIndex === 0 ? pages.length - 1 : currentIndex - 1;
+            } else if (direction === 'next') {
+                newIndex = currentIndex === pages.length - 1 ? 0 : currentIndex + 1;
+            }
+
+            const newPage = pages[newIndex];
+
+            if (newPage) {
+                currentPage.classList.remove('current');
+                currentPage.classList.add('flipped');
+                newPage.classList.add('current');
+                newPage.classList.remove('flipped');
+            }
+
+            checkPageNumber(newPage);
+        }
+
+        // Function to start navigation and update button text dynamically
+        function startNavigation(pageNumber) {
+            navigate('next'); // Navigate to the next page
+
+            // Hide initial message if present
+            const initialMessage = document.querySelector('.initial-message');
+            if (initialMessage) {
+                initialMessage.style.display = 'none';
+            }
+
+            // Update button text dynamically based on the page number
+            const buttons = document.querySelectorAll('.start-button');
+            buttons.forEach(button => {
+                if (button.parentNode.parentNode.id === `page${pageNumber}`) {
+                    // Display different text on each page
+                    switch (pageNumber) {
+                        case 1:
+                            button.textContent = 'Next';
+                            
+                        case 2:
+                            button.textContent = 'Continue';
+                            
+                        case 3:
+                            button.textContent = 'Proceed';
+                            
+                        case 4:
+                            button.textContent = 'Explore';
+                            
+                        case 5:
+                            button.textContent = 'Final Step';
+                            
+                        default:
+                            button.textContent = 'Press Start';
+                            
+                    }
+                } else {
+                    button.style.display = 'none'; // Hide the button in other pages
+                }
+            });
+        }
+
+        // Function to create heart animations
+        function createHearts(count, container) {
+            for (let i = 0; i < count; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.top = `${Math.random() * 100}%`;
+                container.appendChild(heart);
+            }
+        }
+
+        // Function to handle specific messages and heart animations on each page
+        function checkPageNumber(page) {
+            const heartsContainersTop = document.querySelectorAll('.hearts-container-top');
+            const heartsContainersBottom = document.querySelectorAll('.hearts-container-bottom');
+
+            // Hide all messages and love messages
+            const messages = document.querySelectorAll('.message');
+            const loveMessages = document.querySelectorAll('.love-message');
+            messages.forEach(message => message.style.display = 'none');
+            loveMessages.forEach(loveMessage => loveMessage.style.display = 'none');
+
+            // Display specific messages on certain pages
+            if (page && page.id === 'page2') {
+                document.getElementById('message2').style.display = 'block';
+                document.getElementById('loveMessage2').style.display = 'block';
+            } else if (page && page.id === 'page4') {
+                document.getElementById('loveMessage4').style.display = 'block';
+            } else if (page && page.id === 'page5') {
+                document.getElementById('message5').style.display = 'block';
+            }
+
+            // Create hearts on all pages
+            heartsContainersTop.forEach(container => createHearts(10, container));
+            heartsContainersBottom.forEach(container => createHearts(10, container));
+        }
+
+        // Function to initialize the page on load
+        window.onload = function() {
+            const firstPage = document.querySelector('.page');
+            firstPage.classList.add('current');
+            createHearts(50, document.querySelector('.container'));
+
+            // Show initial message on first load
+            showInitialMessage();
+        }
+
+        // Function to display an initial message and then hide it
+        function showInitialMessage() {
+            const initialMessage = document.querySelector('.initial-message');
+            initialMessage.style.display = 'block';
+
+            // Hide the message after a short delay
+            setTimeout(function() {
+                initialMessage.style.display = 'none';
+            }, 3000); // Adjust the delay time as needed (3000 milliseconds = 3 seconds)
+        }
+    </script>
+</body>
+</html>

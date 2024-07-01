@@ -1,0 +1,129 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    perspective: 1500px;
+    overflow: hidden;
+}
+
+.page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    transition: transform 1s cubic-bezier(0.42, 0, 0.58, 1);
+    transform-style: preserve-3d;
+    transform-origin: right center;
+}
+
+.page.flipped {
+    transform: rotateY(-180deg);
+}
+
+.page.current {
+    z-index: 2;
+}
+
+.top-half, .bottom-half {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.top-half {
+    top: 0;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+}
+
+.bottom-half {
+    bottom: 0;
+    background-color: #e0e0e0;
+    border-top: 1px solid #ccc;
+}
+
+/* Heart styles */
+.heart {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    transform: rotate(-45deg);
+    animation: float 5s infinite;
+}
+
+.heart::before,
+.heart::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: inherit;
+    border-radius: 50%;
+}
+
+.heart::before {
+    top: -10px;
+    left: 0;
+}
+
+.heart::after {
+    left: 10px;
+    top: 0;
+}
+
+.heart:nth-child(odd) {
+    background-color: pink;
+}
+
+.heart:nth-child(even) {
+    background-color: lightblue;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Message styles */
+.message {
+    display: none;
+    position: absolute;
+    top: 10px;
+    font-size: 24px;
+    color: black;
+}
+
+/* Love Message styles */
+.love-message {
+    display: none;
+    position: absolute;
+    top: 10px;
+    font-size: 24px;
+    color: red;
+    text-align: center;
+    width: 100%;
+}
